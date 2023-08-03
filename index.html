@@ -7,22 +7,28 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
   </head>
-  <body>
-    
-    <section id="load-file-section" hidden>
-      <div id="title"><h1>Har File Analyzer</h2></div>
+  <body class="gradient-background">
+    <h1 id="main-header">Har File Analyzer</h1>
+    <section id="load-file-section" >
+      <div id="load-file-container">
+        <div id="load-file-elements">
+          <div id="title"><h1>Choose a ".har" log file</h2></div>
         <div id="main-input" >
           <input type="file" class="main-input-button" id="load-file"/>
         </div>
+      </div>
+        
+      </div>
+      
     </section>
     
-    <section class="center-main-page" id="display-all-queries" >
+    <section class="center-main-page gradient-background" id="display-all-queries" hidden>
       <div id="result-summary">
       <!-- this is coming from the script and dynamically populating the values -->
       </div>
     </section>
 
-    <section id="display-selected-query">
+    <section id="display-selected-query" hidden>
       
       <div id="result-details-tile">
 

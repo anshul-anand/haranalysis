@@ -1,7 +1,10 @@
 // Input fom the user using the input field.
+const loadFileSection = document.getElementById("load-file-section");
+const loadSummary = document.getElementById("display-all-queries");
 const mainInputButton = document.getElementById("load-file");
 const resultSummary = document.getElementById("result-summary");
 const resultDetails = document.getElementById("result-details-tile");
+const displayMoreDetails = document.getElementById("display-selected-query");
 
 // variables for storing data.
 //variable with loaded har file data.
@@ -24,6 +27,10 @@ async function readHarFile() {
 
     // console.log("temparr", temparr);
     fetchRequests();
+    loadFileSection.hidden = true;
+    loadSummary.hidden = false
+
+
   } catch (error) {
     console.log(error);
   }
@@ -106,6 +113,7 @@ function displayResultSummary() {
 
 // function to display the result details, TODO, Fetch the value of the id and show the details of the requesst selected.
 function displayResultDetail(id) {
+  displayMoreDetails.hidden=false;
   finalObjectArray.forEach((element) => {
     // console.log(element);
     if (element.id == id) {
