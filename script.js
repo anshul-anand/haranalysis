@@ -1,6 +1,7 @@
 // Input fom the user using the input field.
 const mainInputButton = document.getElementById("load-file");
 const resultSummary = document.getElementById("result-summary");
+const resultDetails = document.getElementById("result-details-tile");
 
 // variables for storing data.
 //variable with loaded har file data.
@@ -73,6 +74,7 @@ document.addEventListener("click", (e) => {
 //function to fetch the requested values and store it in a seperate array
 function displayResultSummary() {
   finalObjectArray.forEach((element) => {
+    
     let requestDiv = document.createElement("div");
     requestDiv.classList.add("result-summary-tile");
     requestDiv.id = `${element.id}`;
@@ -107,12 +109,39 @@ function displayResultDetail(id) {
   finalObjectArray.forEach((element) => {
     // console.log(element);
     if (element.id == id) {
-      console.log(element.id);
-      console.log(element.queryurl);
-      console.log(element.method);
-      console.log(element.responseStatus);
+      // display the details section.
 
-      if (element.method !== 'GET') {
+      let containerDiv = document.createElement("div");
+    containerDiv.id = "detail-container-div"
+
+      const queryurlelement = document.createElement("h3");
+      const queryurltext = document.createTextNode(
+        `Query URL: ${element.queryurl}`
+      );
+      queryurlelement.appendChild(queryurltext);
+      const querymethodelement = document.createElement("h3");
+      const querymethodtext = document.createTextNode(
+        `Method: ${element.method}`
+      );
+      querymethodelement.appendChild(querymethodtext);
+      const queryresponseStatuselement = document.createElement("h3");
+      const queryresponseStatustext = document.createTextNode(
+        `Response: ${element.responseStatus}`
+      );
+      queryresponseStatuselement.appendChild(queryresponseStatustext);
+
+      containerDiv.appendChild(queryurlelement);
+      containerDiv.appendChild(querymethodelement);
+      containerDiv.appendChild(queryresponseStatuselement);
+      
+
+      resultDetails.appendChild(containerDiv);
+      
+      // console.log(element.queryurl);
+      // console.log(element.method);
+      // console.log(element.responseStatus);
+
+      if (element.method !== "GET") {
         if (
           element.user ||
           element.snowflakeRequestId ||
@@ -124,9 +153,41 @@ function displayResultDetail(id) {
           console.log(element.user);
           console.log(element.snowflakeRequestId);
           console.log(element.role);
-          console.log(element.queryString);
           console.log(element.serverIPAddress);
           console.log(element.startDayTime);
+
+          const serverIPAddresselement = document.createElement("h3");
+          const serverIPAddresstext = document.createTextNode(
+            `Server IP Address:: ${element.serverIPAddress}`
+          );
+          serverIPAddresselement.appendChild(serverIPAddresstext);
+
+          const userelement = document.createElement("h3");
+          const usertext = document.createTextNode(`User: ${element.user}`);
+          userelement.appendChild(usertext);
+
+          const roleelement = document.createElement("h3");
+          const roletext = document.createTextNode(`Role: ${element.role}`);
+          roleelement.appendChild(roletext);
+
+          const snowflakeRequestIdelement = document.createElement("h3");
+          const snowflakeRequestIdtext = document.createTextNode(
+            `Snowflake request ID: ${element.snowflakeRequestId}`
+          );
+          snowflakeRequestIdelement.appendChild(snowflakeRequestIdtext);
+
+          const startDayTimeelement = document.createElement("h3");
+          const startDayTimetext = document.createTextNode(
+            `Start Day time: ${element.startDayTime}`
+          );
+          startDayTimeelement.appendChild(startDayTimetext);
+
+          containerDiv.appendChild(serverIPAddresselement);
+          containerDiv.appendChild(userelement);
+          containerDiv.appendChild(roleelement);
+          containerDiv.appendChild(snowflakeRequestIdelement);
+          containerDiv.appendChild(startDayTimeelement);
+          containerDiv.appendChild(resultDetails)
         }
       }
     }
