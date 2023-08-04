@@ -21,16 +21,10 @@ async function readHarFile() {
     const data = JSON.parse(dataString);
     //har content stored in fileData
     let fileData = data;
-    // console.log("fileData", fileData);
     allRequests = fileData.log;
-    // console.log("allRequests", allRequests);
-
-    // console.log("temparr", temparr);
     fetchRequests();
     loadFileSection.hidden = true;
-    loadSummary.hidden = false
-
-
+    loadSummary.hidden = false;
   } catch (error) {
     console.log(error);
   }
@@ -42,7 +36,6 @@ function fetchRequests() {
   var index = "";
   var request = "";
   var allRequestEntries = allRequests.entries;
-  // console.log("allRequestEntries", allRequestEntries);
   for (var request in allRequestEntries) {
     index = request;
     request = allRequestEntries[request];
@@ -58,145 +51,135 @@ function fetchValuesFromHeaders(headerarr, attributeName) {
   return obj.value;
 }
 
-// this is a test finction can be deleted
+// function to display the result summary and more details.
 
-document.addEventListener("click", (e) => {
-  // Retrieve id from clicked element
-  let elementId = e.target.id;
-  // If element has id
-  if (elementId !== "") {
-    // console.log(elementId);
-    if (elementId !== "load-file") {
-      displayResultDetail(elementId);
-    }
-  }
-  // If element has no id
-  else {
-    console.log("An element without an id was clicked.");
-  }
-});
-
-// this is a test finction can be deleted
-
-//function to fetch the requested values and store it in a seperate array
 function displayResultSummary() {
   finalObjectArray.forEach((element) => {
-    
     let requestDiv = document.createElement("div");
     requestDiv.classList.add("result-summary-tile");
     requestDiv.id = `${element.id}`;
     let requesth2 = document.createElement("h2");
     let requesth2Text = document.createTextNode(` ${element.queryurl}`);
+    requesth2.appendChild(requesth2Text);
+    requestDiv.appendChild(requesth2);
+
     let requesth31 = document.createElement("h3");
     let requesth31Text = document.createTextNode(`${element.method}`);
+    requesth31.appendChild(requesth31Text);
+    requestDiv.appendChild(requesth31);
+
     let requesth32 = document.createElement("h3");
     let request32text = document.createTextNode(
       `Status: ${element.responseStatus}`
     );
-    let moreDetails = document.createElement("a");
-    moreDetails.id = requestDiv.id;
-    moreDetails.classList.add("more-details");
-    moreDetails.href = `#${moreDetails.id}`;
-    let moreDetailsText = document.createTextNode("More Details");
-
-    requesth2.appendChild(requesth2Text);
-    requesth31.appendChild(requesth31Text);
     requesth32.appendChild(request32text);
-    requestDiv.appendChild(requesth2);
-    requestDiv.appendChild(requesth31);
     requestDiv.appendChild(requesth32);
-    moreDetails.appendChild(moreDetailsText);
-    requestDiv.appendChild(moreDetails);
+
+    // collapsable Button
+    let collapseDiv = document.createElement("div");
+    let collapseButtonForMoreDetails = document.createElement("button");
+    collapseButtonForMoreDetails.classList.add("collapsible");
+    collapseButtonForMoreDetails.type = "button";
+    collapseButtonForMoreDetails.textContent = "Details";
+    collapseButtonForMoreDetails.id = "collapse-button";
+    collapseDiv.appendChild(collapseButtonForMoreDetails);
+    requestDiv.append(collapseDiv);
     resultSummary.appendChild(requestDiv);
-  });
-}
 
-// function to display the result details, TODO, Fetch the value of the id and show the details of the requesst selected.
-function displayResultDetail(id) {
-  displayMoreDetails.hidden=false;
-  finalObjectArray.forEach((element) => {
-    // console.log(element);
-    if (element.id == id) {
-      // display the details section.
+    let containerDiv = document.createElement("div");
+    containerDiv.id = "detail-container-div";
+    containerDiv.classList.add("content");
 
-      let containerDiv = document.createElement("div");
-    containerDiv.id = "detail-container-div"
+    const queryurlelement = document.createElement("h3");
+    const queryurltext = document.createTextNode(
+      `Query URL: ${element.queryurl}`
+    );
+    queryurlelement.appendChild(queryurltext);
+    containerDiv.appendChild(queryurlelement);
 
-      const queryurlelement = document.createElement("h3");
-      const queryurltext = document.createTextNode(
-        `Query URL: ${element.queryurl}`
-      );
-      queryurlelement.appendChild(queryurltext);
-      const querymethodelement = document.createElement("h3");
-      const querymethodtext = document.createTextNode(
-        `Method: ${element.method}`
-      );
-      querymethodelement.appendChild(querymethodtext);
-      const queryresponseStatuselement = document.createElement("h3");
-      const queryresponseStatustext = document.createTextNode(
-        `Response: ${element.responseStatus}`
-      );
-      queryresponseStatuselement.appendChild(queryresponseStatustext);
+    const querymethodelement = document.createElement("h3");
+    const querymethodtext = document.createTextNode(
+      `Method: ${element.method}`
+    );
+    querymethodelement.appendChild(querymethodtext);
+    containerDiv.appendChild(querymethodelement);
 
-      containerDiv.appendChild(queryurlelement);
-      containerDiv.appendChild(querymethodelement);
-      containerDiv.appendChild(queryresponseStatuselement);
-      
+    const queryresponseStatuselement = document.createElement("h3");
+    const queryresponseStatustext = document.createTextNode(
+      `Response: ${element.responseStatus}`
+    );
+    queryresponseStatuselement.appendChild(queryresponseStatustext);
+    containerDiv.appendChild(queryresponseStatuselement);
 
-      resultDetails.appendChild(containerDiv);
-      
-      // console.log(element.queryurl);
-      // console.log(element.method);
-      // console.log(element.responseStatus);
+    if (element.method !== "GET") {
+      if (
+        element.user ||
+        element.snowflakeRequestId ||
+        element.role ||
+        element.queryString ||
+        element.serverIPAddress ||
+        element.startDayTime
+      ) {
 
-      if (element.method !== "GET") {
-        if (
-          element.user ||
-          element.snowflakeRequestId ||
-          element.role ||
-          element.queryString ||
-          element.serverIPAddress ||
-          element.startDayTime
-        ) {
-          console.log(element.user);
-          console.log(element.snowflakeRequestId);
-          console.log(element.role);
-          console.log(element.serverIPAddress);
-          console.log(element.startDayTime);
+        const serverIPAddresselement = document.createElement("h3");
+        const serverIPAddresstext = document.createTextNode(
+          `Server IP Address:: ${element.serverIPAddress}`
+        );
+        serverIPAddresselement.appendChild(serverIPAddresstext);
+        containerDiv.appendChild(serverIPAddresselement);
 
-          const serverIPAddresselement = document.createElement("h3");
-          const serverIPAddresstext = document.createTextNode(
-            `Server IP Address:: ${element.serverIPAddress}`
-          );
-          serverIPAddresselement.appendChild(serverIPAddresstext);
+        const userelement = document.createElement("h3");
+        const usertext = document.createTextNode(`User: ${element.user}`);
+        userelement.appendChild(usertext);
+        containerDiv.appendChild(userelement);
 
-          const userelement = document.createElement("h3");
-          const usertext = document.createTextNode(`User: ${element.user}`);
-          userelement.appendChild(usertext);
+        const roleelement = document.createElement("h3");
+        const roletext = document.createTextNode(`Role: ${element.role}`);
+        roleelement.appendChild(roletext);
+        containerDiv.appendChild(roleelement);
 
-          const roleelement = document.createElement("h3");
-          const roletext = document.createTextNode(`Role: ${element.role}`);
-          roleelement.appendChild(roletext);
+        const snowflakeRequestIdelement = document.createElement("h3");
+        const snowflakeRequestIdtext = document.createTextNode(
+          `Snowflake request ID: ${element.snowflakeRequestId}`
+        );
+        snowflakeRequestIdelement.appendChild(snowflakeRequestIdtext);
+        containerDiv.appendChild(snowflakeRequestIdelement);
 
-          const snowflakeRequestIdelement = document.createElement("h3");
-          const snowflakeRequestIdtext = document.createTextNode(
-            `Snowflake request ID: ${element.snowflakeRequestId}`
-          );
-          snowflakeRequestIdelement.appendChild(snowflakeRequestIdtext);
+        const startDayTimeelement = document.createElement("h3");
+        const startDayTimetext = document.createTextNode(
+          `Start Day time: ${element.startDayTime}`
+        );
+        startDayTimeelement.appendChild(startDayTimetext);
+        containerDiv.appendChild(startDayTimeelement);
 
-          const startDayTimeelement = document.createElement("h3");
-          const startDayTimetext = document.createTextNode(
-            `Start Day time: ${element.startDayTime}`
-          );
-          startDayTimeelement.appendChild(startDayTimetext);
+        collapseDiv.appendChild(containerDiv);
 
-          containerDiv.appendChild(serverIPAddresselement);
-          containerDiv.appendChild(userelement);
-          containerDiv.appendChild(roleelement);
-          containerDiv.appendChild(snowflakeRequestIdelement);
-          containerDiv.appendChild(startDayTimeelement);
-          containerDiv.appendChild(resultDetails)
-        }
+        // Logic to work with collapsable button, TODO- As of now its listening to double click check and correct it to single click.
+
+        var coll = document.getElementsByClassName("collapsible");
+
+        // listening for the click event and looking for the id returned, and making the collapsable behave on the click.
+        document.addEventListener("click", (e) => {
+          // Retrieve id from clicked element
+          let elementId = e.target.id;
+          if (elementId !== "") {
+            if (elementId == "collapse-button") {
+              for (var i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function () {
+                  this.classList.toggle("active");
+                  var content = this.nextElementSibling;
+                  if (content.style.display === "block") {
+                    content.style.display = "none";
+                  } else {
+                    content.style.display = "block";
+                  }
+                });
+              }
+            }
+          } else {
+            console.log("An element without an id was clicked.");
+          }
+        });
       }
     }
   });
@@ -213,8 +196,6 @@ function fetchRequestEntries() {
     let objRequests = request.request;
     let objResponse = request.response;
 
-    // console.log(request);
-
     // final extrcter object.
     let objectFinal = {};
 
@@ -230,7 +211,6 @@ function fetchRequestEntries() {
     objectFinal.queryString = objRequests.queryString;
 
     var reqHeaders = objRequests.headers;
-    // console.log(reqHeaders);
 
     // checking specific value which is present in the request header
     for (i in reqHeaders) {
