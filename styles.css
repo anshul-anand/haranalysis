@@ -143,9 +143,7 @@ body {
   }
 }
 
-
-
-/* text for collapsable more details */
+/* collapsable section */
 .collapsible {
     background-color: #777;
     color: white;
@@ -166,5 +164,5 @@ body {
     padding: 0 18px;
     display: none;
     overflow: hidden;
-    background-color: #f1f1f1;
+    background-color: black;
   }

@@ -13,6 +13,8 @@ let allRequests = "";
 let requestObjects = [];
 // final array:
 var finalObjectArray = [];
+// final rawObject Array
+var finalRawObjectArray = [];
 
 // Function to fetch the requests save it to a variable.
 async function readHarFile() {
@@ -31,7 +33,6 @@ async function readHarFile() {
 }
 
 // function to fetch all the requests, and return an array requestObjects with all the objects.
-
 function fetchRequests() {
   var index = "";
   var request = "";
@@ -45,21 +46,187 @@ function fetchRequests() {
   fetchRequestEntries();
 }
 
+// Aside function, Wused while fetching the entries
+
 // fetch values from headers.
 function fetchValuesFromHeaders(headerarr, attributeName) {
   let obj = headerarr.find((o) => o.name === attributeName);
   return obj.value;
 }
 
-// function to display the result summary and more details.
+// function to fetch the requested entries
+function fetchRequestEntries() {
+  ////// new code ////////////////////////////////
+  let finalObject = {};
+  let rawData = {};
 
+  /// This contains an array of javascript objects.
+  var mainentries = requestObjects;
+  // find queries
+
+  requestObjects.forEach((element, index) => {
+    // enter the id to trace:
+    var id = index;
+
+    /// start date time.
+    var startedDateTime = mainentries.find((item) => element.startedDateTime);
+    startedDateTime = startedDateTime.startedDateTime;
+    finalObject = {};
+
+    // fetching the values from request
+    var requests = element.request;
+
+    // fetching URL
+    var url = requests.url;
+    finalObject.url = url;
+
+    // server IP address
+    if (element.serverIPAddress) {
+      var serverIPAddress = mainentries.find((item) => element.serverIPAddress);
+      serverIPAddress = serverIPAddress.serverIPAddress;
+      finalObject.serverIPAddress = serverIPAddress;
+    }
+    var method = requests.method;
+    finalObject.method = method;
+
+    // Start Date time
+    finalObject.startedDateTime = startedDateTime;
+
+    let [dateValues, timevalues] = startedDateTime.split("T");
+    timevalues.split("+");
+    // timevalues = `${timevalues.split("+")[0]} UTC+${timevalues.split("+")[1]}`;
+    finalObject.data = dateValues;
+    finalObject.time = timevalues;
+
+    // Values from request Headers.
+    var requestHeaders = requests.headers;
+    for (i in requestHeaders) {
+      rawData.requestHeaders = requestHeaders;
+      let allkeys = requestHeaders[i].name;
+
+      if (allkeys == "X-Snowflake-Context") {
+        var SnowflakeContext = fetchValuesFromHeaders(
+          requestHeaders,
+          "X-Snowflake-Context"
+        );
+        finalObject.SnowflakeContext = SnowflakeContext;
+      } else if (allkeys == "X-Snowflake-Request-Id") {
+        var SnowflakeRequestId = fetchValuesFromHeaders(
+          requestHeaders,
+          "X-Snowflake-Request-Id"
+        );
+        finalObject.SnowflakeRequestId = SnowflakeRequestId;
+      } else if (allkeys == "X-Numeracy-Client-Version") {
+        var NumeracyClientVersion = fetchValuesFromHeaders(
+          requestHeaders,
+          "X-Numeracy-Client-Version"
+        );
+        finalObject.NumeracyClientVersion = NumeracyClientVersion;
+      } else if (allkeys == "X-Snowflake-Role") {
+        var SnowflakeRole = fetchValuesFromHeaders(
+          requestHeaders,
+          "X-Snowflake-Role"
+        );
+        finalObject.SnowflakeRole = SnowflakeRole;
+      }
+      // query string
+      var queryString = requests.queryString;
+      var querySent = "";
+      if (queryString) {
+        querySent = queryString[0];
+        if (querySent) {
+          queryString.forEach((element) => {
+            querySent = `${element.name}:${element.value}`;
+          });
+          finalObject.querySent = querySent;
+        }
+      }
+
+      //post data
+      var postData = element.request.postData;
+      if (postData) {
+        var postDataParams = postData.params;
+        if (postDataParams.length !== 0) {
+          postDataParams.forEach((element) => {});
+        }
+      }
+
+      // fetching values from response
+      var response = element.response;
+      var responseStatus = response.status;
+      var responseText = response.statusText;
+
+      finalObject.responseStatus = responseStatus;
+      finalObject.responseText = responseText;
+
+      var responseSnowflakeRequestId = response.headers;
+      var ressnowflakeReqID = "";
+      responseSnowflakeRequestId.forEach((element) => {
+        rawData.responseSnowflakeRequestId = responseSnowflakeRequestId;
+        if (element.name == "x-snowflake-request-id") {
+          ressnowflakeReqID = element.value;
+          finalObject.ressnowflakeReqID = ressnowflakeReqID;
+        }
+      });
+
+      var responseContent = response.content;
+
+      if (responseContent.text) {
+      }
+    }
+
+    // extracting username and password
+    let userName = "";
+    let regionUrl = "";
+    if (userName) {
+      finalObject.userName = userName;
+    }
+    if (regionUrl) {
+      finalObject.regionUrl = regionUrl;
+    }
+    if (SnowflakeContext !== undefined) {
+      userName = SnowflakeContext.split(":")[0];
+      regionUrl =
+        SnowflakeContext.split(":")[2] + SnowflakeContext.split(":")[3];
+    }
+    // timings.
+    let totalTime = element.time;
+    let timings = element.timings;
+    finalObject.totalTime;
+    finalObject.timings;
+
+    // check for undefined snowflake SnowflakeRequestId and change it to not set.
+    if (SnowflakeRequestId === undefined) {
+      SnowflakeRequestId = "absent";
+      ressnowflakeReqID = "absent";
+    }
+    if (SnowflakeContext === undefined) {
+      SnowflakeContext = "absent";
+      userName = "absent";
+      regionUrl = "absent";
+    }
+    if (SnowflakeRole === undefined) {
+      SnowflakeRole = "Does not exist";
+    }
+    if (NumeracyClientVersion === undefined) {
+      NumeracyClientVersion = "Does not exist";
+    }
+
+    finalObjectArray.push(finalObject);
+  });
+
+  displayResultSummary();
+}
+
+// function to display the result summary and more details.
 function displayResultSummary() {
   finalObjectArray.forEach((element) => {
+    //// main item tile display
     let requestDiv = document.createElement("div");
     requestDiv.classList.add("result-summary-tile");
     requestDiv.id = `${element.id}`;
     let requesth2 = document.createElement("h2");
-    let requesth2Text = document.createTextNode(` ${element.queryurl}`);
+    let requesth2Text = document.createTextNode(` ${element.url}`);
     requesth2.appendChild(requesth2Text);
     requestDiv.appendChild(requesth2);
 
@@ -75,8 +242,11 @@ function displayResultSummary() {
     requesth32.appendChild(request32text);
     requestDiv.appendChild(requesth32);
 
-    // collapsable Button
+    // dicision to hold collapsable button
     let collapseDiv = document.createElement("div");
+    collapseDiv.id = "more-details-div";
+
+    // collapsable Button
     let collapseButtonForMoreDetails = document.createElement("button");
     collapseButtonForMoreDetails.classList.add("collapsible");
     collapseButtonForMoreDetails.type = "button";
@@ -88,172 +258,47 @@ function displayResultSummary() {
 
     let containerDiv = document.createElement("div");
     containerDiv.id = "detail-container-div";
-    containerDiv.classList.add("content");
 
-    const queryurlelement = document.createElement("h3");
-    const queryurltext = document.createTextNode(
-      `Query URL: ${element.queryurl}`
-    );
-    queryurlelement.appendChild(queryurltext);
-    containerDiv.appendChild(queryurlelement);
+    /// Logic for more details
+    let moredetailsDiv = document.createElement("div");
+    moredetailsDiv.classList.add("content");
+    collapseDiv.appendChild(moredetailsDiv);
+    let moredetailslist = document.createElement("ul");
+    moredetailsDiv.appendChild(moredetailslist);
 
-    const querymethodelement = document.createElement("h3");
-    const querymethodtext = document.createTextNode(
-      `Method: ${element.method}`
-    );
-    querymethodelement.appendChild(querymethodtext);
-    containerDiv.appendChild(querymethodelement);
+    for (const [key, value] of Object.entries(element)) {
+      let listItem = `li${element.id}`;
+      listItem = document.createElement("li");
+      listItem.textContent = `${key} : ${value}`;
+      moredetailslist.appendChild(listItem);
+    }
 
-    const queryresponseStatuselement = document.createElement("h3");
-    const queryresponseStatustext = document.createTextNode(
-      `Response: ${element.responseStatus}`
-    );
-    queryresponseStatuselement.appendChild(queryresponseStatustext);
-    containerDiv.appendChild(queryresponseStatuselement);
+    var coll = document.getElementsByClassName("collapsible");
 
-    if (element.method !== "GET") {
-      if (
-        element.user ||
-        element.snowflakeRequestId ||
-        element.role ||
-        element.queryString ||
-        element.serverIPAddress ||
-        element.startDayTime
-      ) {
-
-        const serverIPAddresselement = document.createElement("h3");
-        const serverIPAddresstext = document.createTextNode(
-          `Server IP Address:: ${element.serverIPAddress}`
-        );
-        serverIPAddresselement.appendChild(serverIPAddresstext);
-        containerDiv.appendChild(serverIPAddresselement);
-
-        const userelement = document.createElement("h3");
-        const usertext = document.createTextNode(`User: ${element.user}`);
-        userelement.appendChild(usertext);
-        containerDiv.appendChild(userelement);
-
-        const roleelement = document.createElement("h3");
-        const roletext = document.createTextNode(`Role: ${element.role}`);
-        roleelement.appendChild(roletext);
-        containerDiv.appendChild(roleelement);
-
-        const snowflakeRequestIdelement = document.createElement("h3");
-        const snowflakeRequestIdtext = document.createTextNode(
-          `Snowflake request ID: ${element.snowflakeRequestId}`
-        );
-        snowflakeRequestIdelement.appendChild(snowflakeRequestIdtext);
-        containerDiv.appendChild(snowflakeRequestIdelement);
-
-        const startDayTimeelement = document.createElement("h3");
-        const startDayTimetext = document.createTextNode(
-          `Start Day time: ${element.startDayTime}`
-        );
-        startDayTimeelement.appendChild(startDayTimetext);
-        containerDiv.appendChild(startDayTimeelement);
-
-        collapseDiv.appendChild(containerDiv);
-
-        // Logic to work with collapsable button, TODO- As of now its listening to double click check and correct it to single click.
-
-        var coll = document.getElementsByClassName("collapsible");
-
-        // listening for the click event and looking for the id returned, and making the collapsable behave on the click.
-        document.addEventListener("click", (e) => {
-          // Retrieve id from clicked element
-          let elementId = e.target.id;
-          if (elementId !== "") {
-            if (elementId == "collapse-button") {
-              for (var i = 0; i < coll.length; i++) {
-                coll[i].addEventListener("click", function () {
-                  this.classList.toggle("active");
-                  var content = this.nextElementSibling;
-                  if (content.style.display === "block") {
-                    content.style.display = "none";
-                  } else {
-                    content.style.display = "block";
-                  }
-                });
+    // listening for the click event and looking for the id returned, and making the collapsable behave on the click.
+    document.addEventListener("click", (e) => {
+      // Retrieve id from clicked element
+      let elementId = e.target.id;
+      if (elementId !== "") {
+        if (elementId == "collapse-button") {
+          for (var i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+              this.classList.toggle("active");
+              var content = this.nextElementSibling;
+              if (content.style.display === "block") {
+                content.style.display = "none";
+              } else {
+                content.style.display = "block";
               }
-            }
-          } else {
-            console.log("An element without an id was clicked.");
+            });
           }
-        });
+        }
+      } else {
+        console.log("An element without an id was clicked.");
       }
-    }
+    });
+    // logic to display Raw items
   });
-}
-
-// function to fetch the requested entries
-function fetchRequestEntries() {
-  for (var object in requestObjects) {
-    //variable to store the parameters of the request.
-    let position = object;
-    let request = requestObjects[object];
-
-    // Values for the requests and response
-    let objRequests = request.request;
-    let objResponse = request.response;
-
-    // final extrcter object.
-    let objectFinal = {};
-
-    //creating an array with all the extracter fields.
-    objectFinal.id = position;
-    objectFinal.time = request.time;
-    objectFinal.startDayTime = request.startedDateTime;
-    objectFinal.serverIPAddress = request.serverIPAddress;
-
-    // fetching values from the request header
-    objectFinal.method = objRequests.method;
-    objectFinal.queryurl = objRequests.url;
-    objectFinal.queryString = objRequests.queryString;
-
-    var reqHeaders = objRequests.headers;
-
-    // checking specific value which is present in the request header
-    for (i in reqHeaders) {
-      let allKeys = reqHeaders[i].name;
-
-      // if the key is present append the attribute to the final array.
-
-      // for x-snowflake-context, Used this to derive the username and snowflake accountURL
-      if (allKeys == "x-snowflake-context") {
-        let requestContexxt = fetchValuesFromHeaders(
-          reqHeaders,
-          "x-snowflake-context"
-        );
-        // name of the user
-
-        objectFinal.user = requestContexxt.split(":")[0];
-
-        // account url
-        objectFinal.accountURL =
-          requestContexxt.split(":")[2] + requestContexxt.split(":")[3];
-        // for x-snowflake-role used to fetch the role
-      } else if (allKeys == "x-snowflake-role") {
-        objectFinal.role = fetchValuesFromHeaders(
-          reqHeaders,
-          "x-snowflake-role"
-        );
-        //x-snowflake-request-id fetched the snowflake request id using this.
-      } else if (allKeys == "x-snowflake-request-id") {
-        objectFinal.snowflakeRequestId = fetchValuesFromHeaders(
-          reqHeaders,
-          "x-snowflake-request-id"
-        );
-      }
-    }
-
-    // response status and text
-    objectFinal.responseStatus = objResponse.status;
-    objectFinal.responseText = objResponse.statusText;
-
-    // push to final array
-    finalObjectArray.push(objectFinal);
-  }
-  displayResultSummary();
 }
 
 /// Event listeners
