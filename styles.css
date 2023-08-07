@@ -61,8 +61,15 @@ h3 {
 }
 
 #title {
+  font-family: Noto + Sans, sans-serif;
+  margin-top: 0;
   font-size: 20px;
   letter-spacing: 3px;
+  margin-bottom: 30px;
+  text-align: left;
+  margin-left: 230px;
+  color: #353935;
+ 
 }
 
 #main-input {
@@ -75,12 +82,24 @@ h3 {
 }
 
 .main-input-button::-webkit-file-upload-button {
-  background-color: rgba(0, 0, 0, 0.137);
+  background-color: rgba(0, 0, 0, 0.337);
+  
   color: white;
   font-size: 20px;
   padding: 20px 100px;
   border-radius: 50px;
   cursor: pointer;
+  font-size: 20px;
+  box-shadow: ;
+}
+.main-input-button::-webkit-file-upload-button:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 20px;
+  padding: 20px 100px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 20px;
 }
 
 #display-all-queries {
@@ -217,3 +236,4 @@ textarea {
   list-style-type: none;
   font-size: 15px;
 }
+

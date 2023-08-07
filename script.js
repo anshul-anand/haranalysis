@@ -29,6 +29,7 @@ async function readHarFile() {
     loadFileSection.hidden = true;
     loadSummary.hidden = false;
   } catch (error) {
+    console.log(error)
     alert(
       "Could not read the file, Please check the file selected is a .har file"
     );
@@ -149,7 +150,7 @@ function fetchRequestEntries() {
       var postData = element.request.postData;
       if (postData) {
         var postDataParams = postData.params;
-        if (postDataParams.length !== 0) {
+        if (postDataParams) {
           postDataParams.forEach((element) => {});
         }
       }
@@ -181,16 +182,12 @@ function fetchRequestEntries() {
     // extracting username and password
     let userName = "";
     let regionUrl = "";
-    if (userName) {
-      finalObject.userName = userName;
-    }
-    if (regionUrl) {
-      finalObject.regionUrl = regionUrl;
-    }
     if (SnowflakeContext !== undefined) {
       userName = SnowflakeContext.split(":")[0];
       regionUrl =
         SnowflakeContext.split(":")[2] + SnowflakeContext.split(":")[3];
+      finalObject.userName = userName;
+      finalObject.regionUrl = regionUrl;
     }
     // timings.
     let totalTime = element.time;
@@ -217,13 +214,10 @@ function displayResultSummary() {
     let requestDiv = document.createElement("div");
     var status = element.responseStatus.toString();
     if (status[0] == "2") {
-      console.log(status[0]);
       requestDiv.classList.add("result-summary-tile-ok");
     } else if (status[0] == "5") {
-      console.log(status[0]);
       requestDiv.classList.add("result-summary-tile-error");
     } else if (status[0] == "4") {
-      console.log(status[0]);
       requestDiv.classList.add("result-summary-tile-error");
     } else {
       requestDiv.classList.add("result-summary-tile");
@@ -276,7 +270,8 @@ function displayResultSummary() {
         `${key}` == "request" ||
         `${key}` == "response" ||
         `${key}` == "id" ||
-        `${key}` == "timings"
+        `${key}` == "timings" ||
+        `${key}` == "SnowflakeContext"
       ) {
         continue;
       }
@@ -289,18 +284,24 @@ function displayResultSummary() {
         listItem.textContent = `Method : ${value}`;
       } else if (`${key}` == "startedDateTime") {
         listItem.textContent = `Date Time : ${value}`;
-      } else if (`${key}` == "date") {
+      } else if (`${key}` == "data") {
         listItem.textContent = `Date : ${value}`;
       } else if (`${key}` == "time") {
-        listItem.textContent = `Date Time : ${value}`;
-      } else if (`${key}` == "startedDateTime") {
         listItem.textContent = `Time : ${value}`;
       } else if (`${key}` == "querySent") {
         listItem.textContent = ` Query Text : ${value}`;
       } else if (`${key}` == "ressnowflakeReqID") {
-        listItem.textContent = `Snowflake Request : ${value}`;
+        listItem.textContent = `Snowflake Request ID : ${value}`;
       } else if (`${key}` == "responseStatus") {
         listItem.textContent = ` Status : ${value}`;
+      } else if (`${key}` == "userName") {
+        listItem.textContent = ` User Name : ${value}`;
+      } else if (`${key}` == "regionUrl") {
+        listItem.textContent = ` Region URL : ${value}`;
+      } else if (`${key}` == "SnowflakeRequestId") {
+        listItem.textContent = ` Snowflake Request ID : ${value}`;
+      } else if (`${key}` == "SnowflakeRole") {
+        listItem.textContent = ` Snowflake Role : ${value}`;
       }
       moredetailslist.appendChild(listItem);
     }
