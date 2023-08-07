@@ -3,7 +3,7 @@ body {
   margin: 0;
   width: 100vw;
   height: 100vh;
-  color: white;
+  /* color: white; */
 }
 
 #main-header {
@@ -144,7 +144,7 @@ body {
 }
 
 /* collapsable section */
-.collapsible {
+/* .collapsible {
     background-color: #777;
     color: white;
     cursor: pointer;
@@ -155,11 +155,11 @@ body {
     outline: none;
     font-size: 15px;
   }
-  
-  .active, .collapsible:hover {
+   */
+  /* .active, .collapsible:hover {
     background-color: #555;
   }
-  
+   */
   .content {
     padding: 0 18px;
     display: none;

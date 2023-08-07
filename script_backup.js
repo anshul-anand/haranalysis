@@ -46,6 +46,8 @@ function fetchRequests() {
   fetchRequestEntries();
 }
 
+
+
 // Aside function, Wused while fetching the entries
 
 // fetch values from headers.
@@ -192,8 +194,8 @@ function fetchRequestEntries() {
     // timings.
     let totalTime = element.time;
     let timings = element.timings;
-    finalObject.totalTime = totalTime;
-    finalObject.timings = timings;
+    finalObject.totalTime=totalTime;
+    finalObject.timings=timings;
 
     finalObject.response = element.response;
     finalObject.request = element.request;
@@ -232,106 +234,119 @@ function displayResultSummary() {
     let collapseDiv = document.createElement("div");
     collapseDiv.id = "more-details-div";
 
-    ///// implementing collapse using bootstrap
-    // for more details.
-    let bcollapse = document.createElement("p");
-    bcollapse.classList.add("d-inline-flex", "gap-1");
-    bcollapse.innerHTML = ` <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#detail${element.id}" aria-expanded="false" aria-controls="detail${element.id}">More Details.</button>`;
-    let bcollapsedivstyle = document.createElement("div");
-    let bcollapsesecdiv = document.createElement("div");
-    bcollapsesecdiv.classList.add("collapse", "collapse-vertical");
-    bcollapsesecdiv.id = `detail${element.id}`;
-    bcollapsedivstyle.appendChild(bcollapsesecdiv);
-    let bcollapseCarddiv = document.createElement("div");
-    bcollapseCarddiv.classList.add("card", "card-body");
-    bcollapseCarddiv.style = "width: auto;";
-    bcollapsesecdiv.appendChild(bcollapseCarddiv);
-    let bcollapsecontentDiv = document.createElement('div')
+    // collapsable Button
+    let collapseButtonForMoreDetails = document.createElement("button");
+    collapseButtonForMoreDetails.classList.add("collapsible");
+    collapseButtonForMoreDetails.type = "button";
+    collapseButtonForMoreDetails.textContent = "Details";
+    collapseButtonForMoreDetails.id = "collapse-button";
+    collapseDiv.appendChild(collapseButtonForMoreDetails);
+    requestDiv.append(collapseDiv);
+    resultSummary.appendChild(requestDiv);
+
+    let containerDiv = document.createElement("div");
+    containerDiv.id = "detail-container-div";
+
+    /// Logic for more details
+    let moredetailsDiv = document.createElement("div");
+    moredetailsDiv.classList.add("content");
+    moredetailsDiv.id = "content";
+    collapseDiv.appendChild(moredetailsDiv);
     let moredetailslist = document.createElement("ul");
+    moredetailsDiv.appendChild(moredetailslist);
+
     for (const [key, value] of Object.entries(element)) {
       listItem = document.createElement("li");
 
-      if (
-        `${key}` == "request" ||
-        `${key}` == "response" ||
-        `${key}` == "id" ||
-        `${key}` == "timings"
-      ) {
+      if (`${key}` == "request" || `${key}` == "response" || `${key}` == "id" || `${key}`== "timings") {
         continue;
       }
       listItem.textContent = `${key} : ${value}`;
       moredetailslist.appendChild(listItem);
     }
-    bcollapsecontentDiv.appendChild(moredetailslist);
-    bcollapseCarddiv.appendChild(bcollapsecontentDiv);
-    collapseDiv.appendChild(bcollapse);
-    collapseDiv.appendChild(bcollapsedivstyle);
-    resultSummary.appendChild(requestDiv);
-    requestDiv.appendChild(collapseDiv);
 
-    // for raw details.
-    let bcollapseraw = document.createElement("p");
-    bcollapseraw.classList.add("d-inline-flex", "gap-1");
-    bcollapseraw.innerHTML = ` <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#raw${element.id}" aria-expanded="false" aria-controls="raw${element.id}">Raw Headers.</button>`;
-    let bcollapsedivstyleraw = document.createElement("div");
-    let bcollapsesecdivraw = document.createElement("div");
-    bcollapsesecdivraw.classList.add("collapse", "collapse-vertical");
-    bcollapsesecdivraw.id = `raw${element.id}`;
-    bcollapsedivstyleraw.appendChild(bcollapsesecdivraw);
-    let bcollapseCarddivraw = document.createElement("div");
-    bcollapseCarddivraw.classList.add("card", "card-body");
-    bcollapseCarddivraw.style = "width: auto;";
-    bcollapsesecdivraw.appendChild(bcollapseCarddivraw);
+// Displaying Raw Data
+let collapseButtonForrawData = document.createElement("button");
+collapseButtonForrawData.classList.add("collapsible");
+collapseButtonForrawData.type = "button";
+collapseButtonForrawData.textContent = "Raw Data";
+collapseButtonForrawData.id = "raw-data-button";
 
-    bcollapseCarddiv.appendChild(bcollapseraw);
-    bcollapseraw.appendChild(bcollapsedivstyleraw);
-    bcollapsesecdivraw.appendChild(bcollapseCarddivraw);
+moredetailsDiv.appendChild(collapseButtonForrawData);
 
-    // // raw request
-    let rawrequestcontentdiv = document.createElement('div')
+/// raw request
+let rawDetailsdiv = document.createElement('div');
+rawDetailsdiv.classList.add('content');
+rawDetailsdiv.id='content';
+moredetailsDiv.appendChild(rawDetailsdiv);
+let rawDataRequestTextArea = document.createElement('textarea');
+rawDataRequestTextArea.readOnly = true;
+rawDataRequestTextArea.id='textarearequest';
+rawDataRequestTextArea.cols=200;
+rawDataRequestTextArea.rows=20;
 
-    let rawDataRequestTextArearequest = document.createElement("h4");
-    rawDataRequestTextArearequest.createTextNode = "request";
-    let rawDataRequestTextArea = document.createElement("textarea");
-    rawDataRequestTextArea.readOnly = true;
-    rawDataRequestTextArea.id = "textarearequest";
-    rawDataRequestTextArea.cols = 200;
-    rawDataRequestTextArea.rows = 20;
-    rawDataRequestTextArearequest.appendChild(rawDataRequestTextArea);
-    rawrequestcontentdiv.appendChild(rawDataRequestTextArearequest);
+//// raw response
+let rawDataResponseTextArea = document.createElement('textarea');
+rawDataResponseTextArea.readOnly = true;
+rawDataResponseTextArea.id='textarearesponse';
+rawDataResponseTextArea.cols=200;
+rawDataResponseTextArea.rows=20;
 
-    // //// raw response
-    let rawDataResponseTextArearesponse = document.createElement("h4");
-    rawDataResponseTextArearesponse.createTextNode = "Response";
-    let rawDataResponseTextArea = document.createElement("textarea");
-    rawDataResponseTextArea.readOnly = true;
-    rawDataResponseTextArea.id = "textarearesponse";
-    rawDataResponseTextArea.cols = 200;
-    rawDataResponseTextArea.rows = 20;
-    rawDataResponseTextArearesponse.appendChild(rawDataResponseTextArea);
-    rawrequestcontentdiv.appendChild(rawDataResponseTextArearesponse)
 
-    // /// raw timings.
-    let rawDataTimingsTextAreaTextTiming = document.createElement("h4");
-    rawDataTimingsTextAreaTextTiming.createTextNode = "Timings";
-    let rawDataTimingsTextArea = document.createElement("textarea");
-    rawDataTimingsTextArea.readOnly = true;
-    rawDataTimingsTextArea.id = "textareastimings";
-    rawDataTimingsTextArea.cols = 50;
-    rawDataTimingsTextArea.rows = 10;
-    rawDataTimingsTextAreaTextTiming.appendChild(rawDataTimingsTextArea);
-    rawrequestcontentdiv.appendChild(rawDataTimingsTextAreaTextTiming)
+/// raw timings.
+let rawDataTimingsTextArea = document.createElement('textarea');
+rawDataTimingsTextArea.readOnly=true;
+rawDataTimingsTextArea.id = 'textareastimings'
+rawDataTimingsTextArea.cols=200;
+rawDataTimingsTextArea.rows=20;
 
-    let requestValues = JSON.stringify(element.request, undefined, 4);
-    let responseValues = JSON.stringify(element.response, undefined, 4);
-    let timingsValues = JSON.stringify(element.timings, undefined, 4);
-    rawDataRequestTextArea.value = requestValues;
-    rawDataResponseTextArea.value = responseValues;
-    rawDataTimingsTextArea.value = timingsValues;
 
-    bcollapseCarddivraw.appendChild(rawrequestcontentdiv);
-    // bcollapseCarddivraw.appendChild(rawDataResponseTextArearesponse);
-    // bcollapseCarddivraw.appendChild(rawDataTimingsTextAreaTextTiming);
+
+
+let requestValues = JSON.stringify(element.request,undefined,4);
+let responseValues = JSON.stringify(element.response,undefined,4);
+let timingsValues = JSON.stringify(element.timings,undefined,4);
+rawDataRequestTextArea.value= requestValues;
+rawDataResponseTextArea.value=responseValues;
+rawDataTimingsTextArea.value=timingsValues;
+
+rawDetailsdiv.appendChild(rawDataRequestTextArea);
+rawDetailsdiv.appendChild(rawDataResponseTextArea);
+rawDetailsdiv.appendChild(rawDataTimingsTextArea);
+
+
+
+    var coll = document.getElementsByClassName("collapsible");
+
+    // listening for the click event and looking for the id returned, and making the collapsable behave on the click.
+    document.addEventListener("click", (e) => {
+      // Retrieve id from clicked element
+      let elementId = e.target.id;
+      if (elementId !== "") {
+        if (elementId == "collapse-button") {
+          for (var i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+              this.classList.toggle("active");
+              var content = this.nextElementSibling;
+              if (content.style.display === "block") {
+                content.style.display = "none";
+              } else {
+                content.style.display = "block";
+              }
+            });
+          }
+        }
+      } else {
+        console.log("An element without an id was clicked.");
+      }
+    });
+
+////////// test to better fetch the rawdetails and more details. 
+
+
+
+
+    // logic to display Raw items
   });
 }
 

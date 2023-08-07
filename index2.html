@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 <style>
 .collapsible {
   background-color: #777;
@@ -29,7 +30,7 @@
 </head>
 <body>
 
-<h2>Collapsibles</h2>
+<!-- <h2>Collapsibles</h2>
 
 <p>A Collapsible:</p>
 <button type="button" class="collapsible">Open Collapsible</button>
@@ -55,23 +56,56 @@
 <button type="button" class="collapsible">Open Section 3</button>
 <div class="content">
   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+</div> -->
+
+<!-- // collapse using bootstrap -->
+<p class="d-inline-flex gap-1">
+  <a class="btn btn-primary" data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle first element</a>
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#testExample" aria-expanded="false" aria-controls="testExample">testExample</button>
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">Toggle both elements</button>
+</p>
+<div class="row">
+  <div class="col">
+    <div class="collapse multi-collapse" id="multiCollapseExample1">
+      <div class="card card-body">
+        <ul>
+          <li>item1</li>
+          <li>item2</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="collapse multi-collapse" id="testExample">
+      <div class="card card-body">
+        <ul>
+          <li>item1</li>
+          <li>item2</li>
+          <li>item3</li>
+          <li>item4</li>
+        </ul>
+      </div>
+      <h1>Yahoo</h1>
+    </div>
+  </div>
 </div>
-
-<script>
+<h1>Yahoo</h1>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+<!-- <script>
 var coll = document.getElementsByClassName("collapsible");
-var i;
+var i; -->
 
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
-  });
-}
+// for (i = 0; i < coll.length; i++) {
+//   coll[i].addEventListener("click", function() {
+//     this.classList.toggle("active");
+//     var content = this.nextElementSibling;
+//     if (content.style.display === "block") {
+//       content.style.display = "none";
+//     } else {
+//       content.style.display = "block";
+//     }
+//   });
+// }
 </script>
 
 </body>
