@@ -5,6 +5,7 @@ const mainInputButton = document.getElementById("load-file");
 const resultSummary = document.getElementById("result-summary");
 const resultDetails = document.getElementById("result-details-tile");
 const displayMoreDetails = document.getElementById("display-selected-query");
+const mainHeaderElement = document.getElementById("main-header");
 
 // variables for storing data.
 //variable with loaded har file data.
@@ -28,7 +29,9 @@ async function readHarFile() {
     loadFileSection.hidden = true;
     loadSummary.hidden = false;
   } catch (error) {
-    console.log(error);
+    alert(
+      "Could not read the file, Please check the file selected is a .har file"
+    );
   }
 }
 
@@ -204,12 +207,28 @@ function fetchRequestEntries() {
   displayResultSummary();
 }
 
+/// function to change the tile color
 // function to display the result summary and more details.
 function displayResultSummary() {
+  mainHeaderElement.classList.remove("main-header");
+  mainHeaderElement.classList.add("main-header-alt");
   finalObjectArray.forEach((element) => {
     //// main item tile display
     let requestDiv = document.createElement("div");
-    requestDiv.classList.add("result-summary-tile");
+    var status = element.responseStatus.toString();
+    if (status[0] == "2") {
+      console.log(status[0]);
+      requestDiv.classList.add("result-summary-tile-ok");
+    } else if (status[0] == "5") {
+      console.log(status[0]);
+      requestDiv.classList.add("result-summary-tile-error");
+    } else if (status[0] == "4") {
+      console.log(status[0]);
+      requestDiv.classList.add("result-summary-tile-error");
+    } else {
+      requestDiv.classList.add("result-summary-tile");
+    }
+
     requestDiv.id = `${element.id}`;
     let requesth2 = document.createElement("h2");
     let requesth2Text = document.createTextNode(` ${element.url}`);
@@ -225,6 +244,7 @@ function displayResultSummary() {
     let request32text = document.createTextNode(
       `Status: ${element.responseStatus}`
     );
+
     requesth32.appendChild(request32text);
     requestDiv.appendChild(requesth32);
 
@@ -236,7 +256,7 @@ function displayResultSummary() {
     // for more details.
     let bcollapse = document.createElement("p");
     bcollapse.classList.add("d-inline-flex", "gap-1");
-    bcollapse.innerHTML = ` <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#detail${element.id}" aria-expanded="false" aria-controls="detail${element.id}">More Details.</button>`;
+    bcollapse.innerHTML = ` <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#detail${element.id}" aria-expanded="false" aria-controls="detail${element.id}">More Details</button>`;
     let bcollapsedivstyle = document.createElement("div");
     let bcollapsesecdiv = document.createElement("div");
     bcollapsesecdiv.classList.add("collapse", "collapse-vertical");
@@ -244,9 +264,10 @@ function displayResultSummary() {
     bcollapsedivstyle.appendChild(bcollapsesecdiv);
     let bcollapseCarddiv = document.createElement("div");
     bcollapseCarddiv.classList.add("card", "card-body");
+    bcollapseCarddiv.id = "card-body";
     bcollapseCarddiv.style = "width: auto;";
     bcollapsesecdiv.appendChild(bcollapseCarddiv);
-    let bcollapsecontentDiv = document.createElement('div')
+    let bcollapsecontentDiv = document.createElement("div");
     let moredetailslist = document.createElement("ul");
     for (const [key, value] of Object.entries(element)) {
       listItem = document.createElement("li");
@@ -260,8 +281,30 @@ function displayResultSummary() {
         continue;
       }
       listItem.textContent = `${key} : ${value}`;
+      if (`${key}` == "url") {
+        listItem.textContent = `Request URL : ${value}`;
+      } else if (`${key}` == "serverIPAddress") {
+        listItem.textContent = `Server IP : ${value}`;
+      } else if (`${key}` == "method") {
+        listItem.textContent = `Method : ${value}`;
+      } else if (`${key}` == "startedDateTime") {
+        listItem.textContent = `Date Time : ${value}`;
+      } else if (`${key}` == "date") {
+        listItem.textContent = `Date : ${value}`;
+      } else if (`${key}` == "time") {
+        listItem.textContent = `Date Time : ${value}`;
+      } else if (`${key}` == "startedDateTime") {
+        listItem.textContent = `Time : ${value}`;
+      } else if (`${key}` == "querySent") {
+        listItem.textContent = ` Query Text : ${value}`;
+      } else if (`${key}` == "ressnowflakeReqID") {
+        listItem.textContent = `Snowflake Request : ${value}`;
+      } else if (`${key}` == "responseStatus") {
+        listItem.textContent = ` Status : ${value}`;
+      }
       moredetailslist.appendChild(listItem);
     }
+
     bcollapsecontentDiv.appendChild(moredetailslist);
     bcollapseCarddiv.appendChild(bcollapsecontentDiv);
     collapseDiv.appendChild(bcollapse);
@@ -272,7 +315,7 @@ function displayResultSummary() {
     // for raw details.
     let bcollapseraw = document.createElement("p");
     bcollapseraw.classList.add("d-inline-flex", "gap-1");
-    bcollapseraw.innerHTML = ` <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#raw${element.id}" aria-expanded="false" aria-controls="raw${element.id}">Raw Headers.</button>`;
+    bcollapseraw.innerHTML = ` <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#raw${element.id}" aria-expanded="false" aria-controls="raw${element.id}">Raw Data</button>`;
     let bcollapsedivstyleraw = document.createElement("div");
     let bcollapsesecdivraw = document.createElement("div");
     bcollapsesecdivraw.classList.add("collapse", "collapse-vertical");
@@ -280,6 +323,7 @@ function displayResultSummary() {
     bcollapsedivstyleraw.appendChild(bcollapsesecdivraw);
     let bcollapseCarddivraw = document.createElement("div");
     bcollapseCarddivraw.classList.add("card", "card-body");
+    bcollapseCarddivraw.id = "raw-card-body";
     bcollapseCarddivraw.style = "width: auto;";
     bcollapsesecdivraw.appendChild(bcollapseCarddivraw);
 
@@ -288,50 +332,52 @@ function displayResultSummary() {
     bcollapsesecdivraw.appendChild(bcollapseCarddivraw);
 
     // // raw request
-    let rawrequestcontentdiv = document.createElement('div')
+    let rawrequestcontentdiv = document.createElement("div");
 
     let rawDataRequestTextArearequest = document.createElement("h4");
-    rawDataRequestTextArearequest.createTextNode = "request";
+    // rawDataRequestTextArearequest.textContent = "Request";
     let rawDataRequestTextArea = document.createElement("textarea");
     rawDataRequestTextArea.readOnly = true;
     rawDataRequestTextArea.id = "textarearequest";
-    rawDataRequestTextArea.cols = 200;
-    rawDataRequestTextArea.rows = 20;
+    rawDataRequestTextArea.cols = 120;
+    rawDataRequestTextArea.rows = 10;
     rawDataRequestTextArearequest.appendChild(rawDataRequestTextArea);
     rawrequestcontentdiv.appendChild(rawDataRequestTextArearequest);
 
     // //// raw response
     let rawDataResponseTextArearesponse = document.createElement("h4");
-    rawDataResponseTextArearesponse.createTextNode = "Response";
+    // rawDataResponseTextArearesponse.textContent = "Response";
     let rawDataResponseTextArea = document.createElement("textarea");
     rawDataResponseTextArea.readOnly = true;
     rawDataResponseTextArea.id = "textarearesponse";
-    rawDataResponseTextArea.cols = 200;
-    rawDataResponseTextArea.rows = 20;
+    rawDataResponseTextArea.cols = 120;
+    rawDataResponseTextArea.rows = 10;
     rawDataResponseTextArearesponse.appendChild(rawDataResponseTextArea);
-    rawrequestcontentdiv.appendChild(rawDataResponseTextArearesponse)
+    rawrequestcontentdiv.appendChild(rawDataResponseTextArearesponse);
 
     // /// raw timings.
     let rawDataTimingsTextAreaTextTiming = document.createElement("h4");
-    rawDataTimingsTextAreaTextTiming.createTextNode = "Timings";
+    // rawDataTimingsTextAreaTextTiming.textContent = "Timings";
     let rawDataTimingsTextArea = document.createElement("textarea");
     rawDataTimingsTextArea.readOnly = true;
     rawDataTimingsTextArea.id = "textareastimings";
-    rawDataTimingsTextArea.cols = 50;
+    rawDataTimingsTextArea.cols = 120;
     rawDataTimingsTextArea.rows = 10;
     rawDataTimingsTextAreaTextTiming.appendChild(rawDataTimingsTextArea);
-    rawrequestcontentdiv.appendChild(rawDataTimingsTextAreaTextTiming)
+    rawrequestcontentdiv.appendChild(rawDataTimingsTextAreaTextTiming);
 
     let requestValues = JSON.stringify(element.request, undefined, 4);
     let responseValues = JSON.stringify(element.response, undefined, 4);
     let timingsValues = JSON.stringify(element.timings, undefined, 4);
-    rawDataRequestTextArea.value = requestValues;
-    rawDataResponseTextArea.value = responseValues;
-    rawDataTimingsTextArea.value = timingsValues;
+    rawDataRequestTextArea.value = `Requests:  
+    ${requestValues}`;
+    rawDataResponseTextArea.value = `Response:
+    ${responseValues}`;
+    rawDataTimingsTextArea.value = `Total Time:${element.totalTime}
+    Timings:
+    ${timingsValues}`;
 
     bcollapseCarddivraw.appendChild(rawrequestcontentdiv);
-    // bcollapseCarddivraw.appendChild(rawDataResponseTextArearesponse);
-    // bcollapseCarddivraw.appendChild(rawDataTimingsTextAreaTextTiming);
   });
 }
 
