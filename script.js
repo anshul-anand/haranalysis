@@ -29,7 +29,7 @@ async function readHarFile() {
     loadFileSection.hidden = true;
     loadSummary.hidden = false;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     alert(
       "Could not read the file, Please check the file selected is a .har file"
     );
@@ -104,92 +104,91 @@ function fetchRequestEntries() {
 
     // Values from request Headers.
     var requestHeaders = requests.headers;
-    for (i in requestHeaders) {
-      rawData.requestHeaders = requestHeaders;
-      let allkeys = requestHeaders[i].name;
-
-      if (allkeys == "X-Snowflake-Context") {
-        var SnowflakeContext = fetchValuesFromHeaders(
-          requestHeaders,
-          "X-Snowflake-Context"
-        );
-        finalObject.SnowflakeContext = SnowflakeContext;
-      } else if (allkeys == "X-Snowflake-Request-Id") {
-        var SnowflakeRequestId = fetchValuesFromHeaders(
-          requestHeaders,
-          "X-Snowflake-Request-Id"
-        );
-        finalObject.SnowflakeRequestId = SnowflakeRequestId;
-      } else if (allkeys == "X-Numeracy-Client-Version") {
-        var NumeracyClientVersion = fetchValuesFromHeaders(
-          requestHeaders,
-          "X-Numeracy-Client-Version"
-        );
-        finalObject.NumeracyClientVersion = NumeracyClientVersion;
-      } else if (allkeys == "X-Snowflake-Role") {
-        var SnowflakeRole = fetchValuesFromHeaders(
-          requestHeaders,
-          "X-Snowflake-Role"
-        );
-        finalObject.SnowflakeRole = SnowflakeRole;
+    // console.log("request header", requestHeaders);
+    requestHeaders.forEach((element) => {
+      // console.log("request element", element);
+      if (
+        element.name == "x-snowflake-context" ||
+        element.name == "x-snowflake-context"
+      ) {
+        let snowflakeContext = element.value;
+        let snowflakeUser = snowflakeContext.split(":")[0];
+        let locatorUrl =
+          snowflakeContext.split(":")[2] + snowflakeContext.split(":")[3];
+        finalObject.snowflakeContext = snowflakeContext;
+        finalObject.snowflakeUser = snowflakeUser;
+        finalObject.locatorUrl = locatorUrl;
+      } else if (
+        element.name == "x-snowflake-role" ||
+        element.name == "X-snowflake-role"
+      ) {
+        let snowflakeRole = element.value;
+        finalObject.snowflakeRole = snowflakeRole;
+      } else if (
+        element.name == "x-snowflake-request-id" ||
+        element.name == "X-snowflake-request-id"
+      ) {
+        ressnowflakeReqID = element.value;
+        finalObject.ressnowflakeReqID = ressnowflakeReqID;
+      } else if (
+        element.name == "x-snowflake-request-id" ||
+        element.name == "X-snowflake-request-id"
+      ) {
+        ressnowflakeReqID = element.value;
+        finalObject.ressnowflakeReqID = ressnowflakeReqID;
+      } else if (element.name == ":path") {
+        SnowflakeRequestPath = element.value;
+        finalObject.SnowflakeRequestPath = SnowflakeRequestPath;
       }
-      // query string
-      var queryString = requests.queryString;
-      var querySent = "";
-      if (queryString) {
-        querySent = queryString[0];
-        if (querySent) {
-          queryString.forEach((element) => {
-            querySent = `${element.name}:${element.value}`;
-          });
-          finalObject.querySent = querySent;
-        }
-      }
+    });
 
-      //post data
-      var postData = element.request.postData;
-      if (postData) {
-        var postDataParams = postData.params;
-        if (postDataParams) {
-          postDataParams.forEach((element) => {});
-        }
-      }
-
-      // fetching values from response
-      var response = element.response;
-      var responseStatus = response.status;
-      var responseText = response.statusText;
-
-      finalObject.responseStatus = responseStatus;
-      finalObject.responseText = responseText;
-
-      var responseSnowflakeRequestId = response.headers;
-      var ressnowflakeReqID = "";
-      responseSnowflakeRequestId.forEach((element) => {
-        rawData.responseSnowflakeRequestId = responseSnowflakeRequestId;
-        if (element.name == "x-snowflake-request-id") {
-          ressnowflakeReqID = element.value;
-          finalObject.ressnowflakeReqID = ressnowflakeReqID;
-        }
-      });
-
-      var responseContent = response.content;
-
-      if (responseContent.text) {
+    // query string
+    var queryString = requests.queryString;
+    var querySent = "";
+    if (queryString) {
+      querySent = queryString[0];
+      if (querySent) {
+        queryString.forEach((element) => {
+          querySent = `${element.name}-${element.value}`;
+        });
+        finalObject.querySent = querySent;
       }
     }
 
-    // extracting username and password
-    let userName = "";
-    let regionUrl = "";
-    if (SnowflakeContext !== undefined) {
-      userName = SnowflakeContext.split(":")[0];
-      regionUrl =
-        SnowflakeContext.split(":")[2] + SnowflakeContext.split(":")[3];
-      finalObject.userName = userName;
-      finalObject.regionUrl = regionUrl;
+    //post data
+    var postData = element.request.postData;
+    if (postData) {
+      var postDataParams = postData.params;
+      if (postDataParams) {
+        postDataParams.forEach((element) => {});
+      }
     }
-    // timings.
+
+    // fetching values from response
+    var response = element.response;
+
+    var responseStatus = response.status;
+    var responseText = response.statusText;
+
+    finalObject.responseStatus = responseStatus;
+    finalObject.responseText = responseText;
+
+    var responseSnowflakeRequestId = response.headers;
+    // console.log("response header", responseSnowflakeRequestId);
+    var ressnowflakeReqID = "";
+    responseSnowflakeRequestId.forEach((element) => {
+      rawData.responseSnowflakeRequestId = responseSnowflakeRequestId;
+      if (
+        element.name == "x-snowflake-request-id" ||
+        element.name == "X-snowflake-request-id"
+      ) {
+        ressnowflakeReqID = element.value;
+        finalObject.ressnowflakeReqID = ressnowflakeReqID;
+      }
+    });
+
+    var responseContent = response.content;
+
     let totalTime = element.time;
     let timings = element.timings;
     finalObject.totalTime = totalTime;
@@ -204,7 +203,16 @@ function fetchRequestEntries() {
   displayResultSummary();
 }
 
-/// function to change the tile color
+/// Function which generates the gs logs.
+function substractMinutes(date, minutes) {
+  date.setMinutes(date.getMinutes() - minutes);
+  return date;
+}
+function addMinutes(date, minutes) {
+  date.setMinutes(date.getMinutes() + minutes);
+  return date;
+}
+
 // function to display the result summary and more details.
 function displayResultSummary() {
   mainHeaderElement.classList.remove("main-header");
@@ -222,7 +230,6 @@ function displayResultSummary() {
     } else {
       requestDiv.classList.add("result-summary-tile");
     }
-
     requestDiv.id = `${element.id}`;
     let requesth2 = document.createElement("h2");
     let requesth2Text = document.createTextNode(` ${element.url}`);
@@ -278,6 +285,8 @@ function displayResultSummary() {
       listItem.textContent = `${key} : ${value}`;
       if (`${key}` == "url") {
         listItem.textContent = `Request URL : ${value}`;
+      } else if (`${key}` == "SnowflakeRequestPath") {
+        listItem.textContent = `Request Path: ${value}`;
       } else if (`${key}` == "serverIPAddress") {
         listItem.textContent = `Server IP : ${value}`;
       } else if (`${key}` == "method") {
@@ -294,14 +303,16 @@ function displayResultSummary() {
         listItem.textContent = `Snowflake Request ID : ${value}`;
       } else if (`${key}` == "responseStatus") {
         listItem.textContent = ` Status : ${value}`;
-      } else if (`${key}` == "userName") {
+      } else if (`${key}` == "snowflakeUser") {
         listItem.textContent = ` User Name : ${value}`;
-      } else if (`${key}` == "regionUrl") {
+      } else if (`${key}` == "locatorUrl") {
         listItem.textContent = ` Region URL : ${value}`;
       } else if (`${key}` == "SnowflakeRequestId") {
         listItem.textContent = ` Snowflake Request ID : ${value}`;
-      } else if (`${key}` == "SnowflakeRole") {
+      } else if (`${key}` == "snowflakeRole") {
         listItem.textContent = ` Snowflake Role : ${value}`;
+      } else {
+        listItem.textContent = ` ${key} : ${value}`;
       }
       moredetailslist.appendChild(listItem);
     }
@@ -312,6 +323,83 @@ function displayResultSummary() {
     collapseDiv.appendChild(bcollapsedivstyle);
     resultSummary.appendChild(requestDiv);
     requestDiv.appendChild(collapseDiv);
+
+    /// Section which populates the queries to fetch the logs.
+
+    if (element.SnowflakeRequestPath) {
+      if (element.SnowflakeRequestPath.startsWith(`/v0/session/`)) {
+        let logdetailsDiv = document.createElement("div");
+        logdetailsDiv.id = "log-details-div";
+        let bcollapselog = document.createElement("p");
+        bcollapselog.classList.add("d-inline-flex", "gap-1");
+        bcollapselog.innerHTML = ` <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#log${element.id}" aria-expanded="false" aria-controls="log${element.id}">Queries</button>`;
+        let bcollapsedivstylelog = document.createElement("div");
+        let bcollapsesecdivlog = document.createElement("div");
+        bcollapsesecdivlog.classList.add("collapse", "collapse-vertical");
+        bcollapsesecdivlog.id = `log${element.id}`;
+        bcollapsedivstylelog.appendChild(bcollapsesecdivlog);
+        let bcollapseCarddivlog = document.createElement("div");
+        bcollapseCarddivlog.classList.add("card", "card-body");
+        bcollapseCarddivlog.id = "card-body";
+        bcollapseCarddivlog.style = "width: auto;";
+        bcollapsesecdivlog.appendChild(bcollapseCarddivlog);
+        let bcollapsecontentDivlog = document.createElement("div");
+        logdetailsDiv.appendChild(bcollapselog);
+        logdetailsDiv.appendChild(bcollapsedivstylelog);
+        requestDiv.appendChild(logdetailsDiv);
+
+        let logDataHeader = document.createElement("h4");
+        logDataHeader.textContent = "SnowSight Logs";
+        let logDataHeadertextArea = document.createElement("textarea");
+        logDataHeadertextArea.readOnly = true;
+        logDataHeadertextArea.id = "textarearequest";
+        logDataHeadertextArea.cols = 120;
+        logDataHeadertextArea.rows = 10;
+        logDataHeader.appendChild(logDataHeadertextArea);
+
+        ////////// displaying snosight query
+        var logcurrenttime = new Date(element.startedDateTime);
+        var logcurrenttimeIso = logcurrenttime.toISOString();
+
+        // start time substracted 5 minutes
+        var logfetchstarttime = substractMinutes(logcurrenttime, 5);
+        var logfetchstarttimeISO = logfetchstarttime.toISOString();
+        // end time added 5 minutes
+        var logfetchendTime = addMinutes(logcurrenttime, 2);
+        var logfetchendTimeISO = logfetchendTime.toISOString();
+        console.log("element", element);
+        var logRequestID = element.ressnowflakeReqID;
+        console.log("logRequestID", logRequestID);
+        var LocatorUrl = element.locatorUrl;
+        var logLocatorUrl = "";
+        if (LocatorUrl) {
+          logLocatorUrl = LocatorUrl.split("/")[2].split(".")[0];
+          console.log(logLocatorUrl);
+        }
+
+        let quriesToExecute = `
+        --Event time = ${logcurrenttime};
+        set start_time = '${logfetchstarttimeISO}';
+        set end_time = '${logfetchendTimeISO}';
+        set request_id = '${logRequestID}';
+        set account_locator = '${logLocatorUrl}';
+
+          select * from "SNOWHOUSE_LOGS"."AZEASTUS2PROD"."SNOWSIGHT_LOGS_V"
+          where 1=1
+          and timestamp_k8s >= $start_time
+          and timestamp_k8s <= $end_time
+          and session_account ilike $account_locator
+          and request_id = $request_id
+          order by timestamp_k8s desc;
+        `;
+        logDataHeadertextArea.value = quriesToExecute;
+
+        // ///////// above code for snowsight logs.
+
+        bcollapseCarddivlog.appendChild(bcollapsecontentDivlog);
+        bcollapsecontentDivlog.appendChild(logDataHeader);
+      }
+    }
 
     // for raw details.
     let bcollapseraw = document.createElement("p");
@@ -383,6 +471,5 @@ function displayResultSummary() {
 }
 
 /// Event listeners
-
 // Listner for input item on the main page.
 mainInputButton.addEventListener("change", readHarFile);
